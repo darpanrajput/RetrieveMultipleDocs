@@ -1,0 +1,7 @@
+/build
+*.iml
+/local.properties
+/.idea/*
+/captures
+.cxx
+*.json
