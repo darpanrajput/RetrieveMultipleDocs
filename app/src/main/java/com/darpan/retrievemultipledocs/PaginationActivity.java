@@ -8,11 +8,18 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import static com.google.firebase.firestore.DocumentChange.Type.ADDED;
+import static com.google.firebase.firestore.DocumentChange.Type.MODIFIED;
+import static com.google.firebase.firestore.DocumentChange.Type.REMOVED;
 
 public class PaginationActivity extends AppCompatActivity {
     private EditText editTextTitle;
@@ -24,6 +31,7 @@ public class PaginationActivity extends AppCompatActivity {
     private CollectionReference notebookRef = db.collection("Notebook");
 
     private DocumentSnapshot lastResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +56,7 @@ public class PaginationActivity extends AppCompatActivity {
 
         notebookRef.add(note);
     }
+
     public void loadNotes(View v) {
         Query query;
         if (lastResult == null) {
@@ -100,5 +109,50 @@ public class PaginationActivity extends AppCompatActivity {
 
         //this is just to show how to work with pagination but if click the load button twice then it will retrieve the same result
 
+    }
+
+    @Override
+    protected void onStart() {
+        // this the provide the efficient way of iterating the collection and finding the doc where the change occur
+        //instead of iterating the whole the documents
+
+        super.onStart();
+        /*in this onStart method we usually fetching the whole  list of documents when anything changes in collection
+        * but it is not one of the most efficient way of doing it. the best a of doing is to only provide th update
+        * version of that document that has been recently changed instead of fetching the whole list if documents*/
+        notebookRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
+                if (e != null) {
+                    return;
+                }
+
+                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                    //here we are iterating through something called document change get documents changes to change the required object
+                    //this means we dont need to go on whole dat snapshot every document the document changes at the
+                    //there are three type of document changes that will provide the the doc object will is changes ADDED MODIFIED REMOVED
+                    DocumentSnapshot documentSnapshot = dc.getDocument();
+                    String id = documentSnapshot.getId();//by default the data is ordered by the id which is randomly generated
+                    int oldIndex = dc.getOldIndex();// if the doc does not exist then it will hold -1 as position
+                    //like if add the document in th data set and the new added documents will hold the position of curent document object
+                    int newIndex = dc.getNewIndex();
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            textViewData.append("\nAdded: " + id +
+                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex);
+                            break;
+                        case MODIFIED:
+                            textViewData.append("\nModified: " + id +
+                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex);
+                            break;
+                        case REMOVED:
+                            textViewData.append("\nRemoved: " + id +
+                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex);
+                            break;
+                    }
+                }
+            }
+        });
     }
 }
