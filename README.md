@@ -11,4 +11,4 @@ limited result at a time has been discussed and then click load button to load n
 for this  to happen is uses the DocumentSnapshot variable
 ### Note:
 Do not forget to add forebase to your project and dont forget to add google-service.json file in your project 
-###  [Firebase setup android](https://www.geeksforgeeks.org/adding-firebase-to-android-app/)
+### [Firebase setup android](https://www.geeksforgeeks.org/adding-firebase-to-android-app/)
