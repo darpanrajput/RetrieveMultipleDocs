@@ -1,6 +1,6 @@
 # RetrieveMultipleDocs
 This Project is connected to Firestore To make use of Queries
-<br>this the provide the efficient way of iterating the collection and finding the doc where the change occur
+<br>this to provide the efficient way of iterating the collection and finding the doc where the change occur
 <br>instead of iterating the whole the documents
 <b>in this onStart method we usually fetching the whole  list of documents when anything changes in collection
 <br> but it is not one of the most efficient way of doing it. the best way of doing is to only provide the updated
