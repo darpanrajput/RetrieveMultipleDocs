@@ -1,14 +1,17 @@
 package com.darpan.retrievemultipledocs;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -16,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import static com.google.firebase.firestore.DocumentChange.Type.ADDED;
 import static com.google.firebase.firestore.DocumentChange.Type.MODIFIED;
@@ -32,6 +36,7 @@ public class PaginationActivity extends AppCompatActivity {
 
     private DocumentSnapshot lastResult;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +45,7 @@ public class PaginationActivity extends AppCompatActivity {
         editTextDescription = findViewById(R.id.edit_text_description);
         editTextPriority = findViewById(R.id.edit_text_priority);
         textViewData = findViewById(R.id.text_view_data);
+        executeBatchedWrite();
     }
 
     public void addNote(View v) {
@@ -111,15 +117,17 @@ public class PaginationActivity extends AppCompatActivity {
 
     }
 
+
+/*
     @Override
     protected void onStart() {
         // this the provide the efficient way of iterating the collection and finding the doc where the change occur
         //instead of iterating the whole the documents
 
         super.onStart();
-        /*in this onStart method we usually fetching the whole  list of documents when anything changes in collection
+        *//*in this onStart method we usually fetching the whole  list of documents when anything changes in collection
         * but it is not one of the most efficient way of doing it. the best a of doing is to only provide th update
-        * version of that document that has been recently changed instead of fetching the whole list if documents*/
+        * version of that document that has been recently changed instead of fetching the whole list if documents*//*
         notebookRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
@@ -154,5 +162,35 @@ public class PaginationActivity extends AppCompatActivity {
                 }
             }
         });
+    }*/
+
+    private void executeBatchedWrite() {
+
+        WriteBatch batch = db.batch();
+        DocumentReference doc1 = notebookRef.document("New Note");
+        batch.set(doc1, new Note("New Note", "New Note", 1));// crate new doc
+
+        DocumentReference doc2 = notebookRef.document("3TAptygBMGWgMdh6f9wP");//second documents id from firestore
+        batch.update(doc2, "title", "Updated Note"); // update the doc
+
+        DocumentReference doc3 = notebookRef.document("1V9pFclqIYB714k3cg50");//first documents id from firestore this will be delted from database if see the data base
+        batch.delete(doc3);// delete the doc
+
+        DocumentReference doc4 = notebookRef.document();
+        batch.set(doc4, new Note("Added Note", "Added Note", 1));
+
+        /*here we are calling failure listener as performing operation on documents that does exist
+        * will give an exception and if exception occur that means the all the
+        * above operation will not be executed as the batch is atomic in nature so the note will not be
+        * updated niether the new note will be created nor the the note will be modified
+        * the series of operation will failed if exception occur in any of the batched write operation  */
+        batch.commit().addOnFailureListener(new OnFailureListener() {
+            // pefore the single batch write ind single on click
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                textViewData.setText(e.toString());
+            }
+        });
     }
+
 }
