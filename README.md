@@ -14,3 +14,8 @@ the series of operation will failed if exception occur in any of the batched wri
 <img 
 src=https://1.bp.blogspot.com/-6lXdHwwqcAE/XosoeN0MCBI/AAAAAAAAB1o/4QxIyL6GPGsDxO-GM_K7oa6u1iO61QqVQCLcBGAsYHQ/s1600/Screenshot_2020-04-06-18-17-51-977_com.darpan.retrievemultipledocs.jpg
 width="50%"/>
+ #### The Firstore after the Batch Operation <br>
+ the id which is not available is deleted after Batch write
+ <img
+ src=https://1.bp.blogspot.com/-_6XRAHBGWkI/XosphX9mXFI/AAAAAAAAB1w/C8k_86rIKGoFwyAW6Y9SnmrhwlqeM-y2QCLcBGAsYHQ/s1600/f.PNG
+ wdith="50%"/>
