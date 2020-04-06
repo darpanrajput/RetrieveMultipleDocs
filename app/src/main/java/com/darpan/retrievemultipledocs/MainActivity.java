@@ -1,6 +1,7 @@
 package com.darpan.retrievemultipledocs;
 
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -191,5 +192,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void go_pagination(View view) {
+        startActivity(new Intent(MainActivity.this,PaginationActivity.class));
     }
 }
