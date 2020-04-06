@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference notebookRef = db.collection("Notebook");//reference of collection
-    private DocumentReference noteRef = db.document("Notebook/My First Note");//reference of documents
+    private DocumentReference noteRef = db.document("Notebook/My First Note1");//reference of documents
 
 
     @Override
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 String data = "";
 
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    Note note = documentSnapshot.toObject(Note.class);
+                    Note1 note = documentSnapshot.toObject(Note1.class);
                     note.setDocumentId(documentSnapshot.getId());
 
                     String documentId = note.getDocumentId();
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         int priority = Integer.parseInt(editTextPriority.getText().toString());
 
 
-        Note note = new Note(title, description, priority);
+        Note1 note = new Note1(title, description, priority);
 
 //here we ar adding the whole note object in collection which is same as adding the documents in collection
         notebookRef.add(note);
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         String data = "";
 
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            Note note = documentSnapshot.toObject(Note.class);
+                            Note1 note = documentSnapshot.toObject(Note1.class);
                             note.setDocumentId(documentSnapshot.getId());
 
                             String documentId = note.getDocumentId();//this id can be usend to get the single document in collection by using notebookRef.Dcoument(documentID)
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 for (QuerySnapshot queryDocumentSnapshots : querySnapshots) {
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                         //here is the single query snapshot from the list of queries so we have to apply two loops
-                        Note note = documentSnapshot.toObject(Note.class);
+                        Note1 note = documentSnapshot.toObject(Note1.class);
                         note.setDocumentId(documentSnapshot.getId());
 
                         String documentId = note.getDocumentId();
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                textViewData.setText(data);//docs where the peiority is greater than or equal to 2
+                textViewData.setText(data);//docs where the priority is greater than or equal to 2
 
             }
         });
