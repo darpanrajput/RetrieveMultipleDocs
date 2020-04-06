@@ -1,4 +1,5 @@
-# RetrieveMultipleDocs
+# RetrieveMultipleDocs 
+### This is available in PaginationAtivity
 This Project is connected to Firestore To make use of Queries
 <br>this to provide the efficient way of iterating the collection and finding the doc where the change occur
 <br>instead of iterating the whole the documents
