@@ -1,29 +1,27 @@
 package com.darpan.retrievemultipledocs;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
-
-import static com.google.firebase.firestore.DocumentChange.Type.ADDED;
-import static com.google.firebase.firestore.DocumentChange.Type.MODIFIED;
-import static com.google.firebase.firestore.DocumentChange.Type.REMOVED;
 
 public class PaginationActivity extends AppCompatActivity {
     private EditText editTextTitle;
@@ -45,7 +43,7 @@ public class PaginationActivity extends AppCompatActivity {
         editTextDescription = findViewById(R.id.edit_text_description);
         editTextPriority = findViewById(R.id.edit_text_priority);
         textViewData = findViewById(R.id.text_view_data);
-        executeBatchedWrite();
+        ExecuteTransaction();
     }
 
     public void addNote(View v) {
@@ -164,33 +162,28 @@ public class PaginationActivity extends AppCompatActivity {
         });
     }*/
 
-    private void executeBatchedWrite() {
+    private void ExecuteTransaction() {
 
-        WriteBatch batch = db.batch();
-        DocumentReference doc1 = notebookRef.document("New Note");
-        batch.set(doc1, new Note("New Note", "New Note", 1));// crate new doc
-
-        DocumentReference doc2 = notebookRef.document("3TAptygBMGWgMdh6f9wP");//second documents id from firestore
-        batch.update(doc2, "title", "Updated Note"); // update the doc
-
-        DocumentReference doc3 = notebookRef.document("1V9pFclqIYB714k3cg50");//first documents id from firestore this will be delted from database if see the data base
-        batch.delete(doc3);// delete the doc
-
-        DocumentReference doc4 = notebookRef.document();
-        batch.set(doc4, new Note("Added Note", "Added Note", 1));
-
-        /*here we are calling failure listener as performing operation on documents that does exist
-        * will give an exception and if exception occur that means the all the
-        * above operation will not be executed as the batch is atomic in nature so the note will not be
-        * updated niether the new note will be created nor the the note will be modified
-        * the series of operation will failed if exception occur in any of the batched write operation  */
-        batch.commit().addOnFailureListener(new OnFailureListener() {
-            // pefore the single batch write ind single on click
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                textViewData.setText(e.toString());
-            }
-        });
+       db.runTransaction(new Transaction.Function<Long>() {
+           @Nullable
+           @Override
+           public Long apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+               /*here we will define our R/W operation
+               * we can define corresponding raed write simultaneously
+               * first we will define all read and then we define all write operation*/
+               DocumentReference exampleNoteRef = notebookRef.document("Example Note");
+               DocumentSnapshot exampleNoteSnapshot = transaction.get(exampleNoteRef);//this is our read operation
+               long newPriority = exampleNoteSnapshot.getLong("priority") + 1;//every time we run the app it is update by 1
+               // firestore stores number as long
+               transaction.update(exampleNoteRef, "priority", newPriority);
+               return newPriority;
+           }
+       }).addOnSuccessListener(new OnSuccessListener<Long>() {
+                   @Override
+                   public void onSuccess(Long result) {
+                       Toast.makeText(PaginationActivity.this, "New Priority: " + result, Toast.LENGTH_SHORT).show();
+                   }
+               });
     }
 
 }
