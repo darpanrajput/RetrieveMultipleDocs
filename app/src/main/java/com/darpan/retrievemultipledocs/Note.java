@@ -25,11 +25,11 @@ public class Note {
         this.documentId = documentId;
     }
 
-    public Note(String title, String description, int priority,List<String> tags) {
+    public Note(String title, String description, int priority, List<String> tags) {
         this.title = title;
         this.description = description;
         this.priority = priority;
-        this.tags=tags;
+        this.tags= tags;
 
     }
 

@@ -1,23 +1,34 @@
-package com.darpan.retrievemultipledocs;
+package com.darpan.retrievemultipledocs.Model;
 
 import com.google.firebase.firestore.Exclude;
 
-class Note1{
+import java.util.Map;
+
+public class nestedNoteObject {
     private String documentId;
     private String title;
     private String description;
     private int priority;
+    Map<String, Boolean> tags;
+    /*so instead of list of string we would have key value pair*/
+    /*tag{
+    clever:true,
+    old:true,
+    have_hair:true
 
-    public Note1() {
-
+       }*/
+    public nestedNoteObject() {
+        //public no-arg constructor needed
     }
 
-    public Note1(String title, String description, int priority) {
-
+    public nestedNoteObject(String documentId, String title, int priority, Map<String, Boolean> tags) {
+        this.documentId = documentId;
         this.title = title;
         this.description = description;
         this.priority = priority;
+        this.tags = tags;
     }
+
     @Exclude
     public String getDocumentId() {
         return documentId;
@@ -49,5 +60,13 @@ class Note1{
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public Map<String, Boolean> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, Boolean> tags) {
+        this.tags = tags;
     }
 }
